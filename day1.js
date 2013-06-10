@@ -15,7 +15,12 @@
             }
             return inner_result;
         }
-        var number = parseInt(token);
+        var negate = 1;
+        if(token == '-') {
+            negate = -1;
+            token = tokens.shift(1);
+        }
+        var number = parseInt(token) * negate;
         if(number != number) {
             throw "Expected an integer";
         }
