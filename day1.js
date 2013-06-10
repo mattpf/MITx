@@ -8,6 +8,13 @@
     
     var read_operand = function(tokens) {
         var token = tokens.shift(1);
+        if(token == '(') {
+            var inner_result = evaluate(tokens);
+            if(tokens.shift(1) != ')') {
+                throw "Expected a )";
+            }
+            return inner_result;
+        }
         var number = parseInt(token);
         if(number != number) {
             throw "Expected an integer";
@@ -20,8 +27,12 @@
             throw "Missing an operand";
         }
         var value = read_operand(tokens);
-        while(tokens.length > 1) {
-            var operator = tokens.shift(1);
+        while(tokens.length) {
+            var operator = tokens[0];
+            if(operator == ')') {
+                return value;
+            }
+            tokens.shift(1);
             var operand = read_operand(tokens);
             value = operations[operator](value, operand);
         }
