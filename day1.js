@@ -3,7 +3,8 @@
         '*': function(a, b) { return a * b; },
         '+': function(a, b) { return a + b; },
         '-': function(a, b) { return a - b; },
-        '/': function(a, b) { return a / b; }
+        '/': function(a, b) { return a / b; },
+        '^': function(a, b) { return Math.pow(a, b); }
     };
     var functions = {
         'abs': Math.abs,
@@ -101,7 +102,6 @@
         if(tokens.length === 0) {
             throw "Missing an operand";
         }
-        tokens = tokens.slice(0);
         var value = read_term(tokens, variables);
         while(tokens.length) {
             var operator = tokens[0];
@@ -119,13 +119,14 @@
     }
     
     var tokenise = function(text) {
-        var pattern = /(?:[+*\/()\-,]|\.\d+|\d+\.\d*|\d+|\w+)/g;
+        var pattern = /(?:[+*\/()\-,\^]|\.\d+|\d+\.\d*|\d+|\w+)/g;
         var tokens = text.match(pattern);
         return tokens;
     }
     
     var calculate = function(text, variables) {
         var tokens = tokenise(text);
+        tokens = tokens.slice(0);
         try {
             var result = evaluate(tokens, variables);
             if(tokens.length) {
@@ -152,7 +153,8 @@
         var our_env = $.extend({}, env);
         for(var i = 0; i < values.length; ++i) {
             our_env[variable] = values[i];
-            results.push(evaluate(tokens, our_env));
+            var our_tokens = tokens.slice(0);
+            results.push(evaluate(our_tokens, our_env));
         }
         return results;
     }
