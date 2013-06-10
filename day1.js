@@ -12,10 +12,10 @@
         'sqrt': Math.sqrt
     }
     
-    var read_operand = function(tokens) {
+    var read_operand = function(tokens, variables) {
         var token = tokens.shift(1);
         if(token == '(') {
-            var inner_result = evaluate(tokens);
+            var inner_result = evaluate(tokens, variables);
             if(tokens.shift(1) != ')') {
                 throw "Expected a )";
             }
@@ -26,20 +26,25 @@
             negate = -1;
             token = tokens.shift(1);
         }
+        if(variables[token] !== undefined) {
+            return variables[token];
+        }
         // This should probably be somewhere else...
         if(functions[token]) {
-            var func_inner = read_operand(tokens);
-            return functions[token](func_inner);
+            var func_inner = read_operand(tokens, variables);
+            if(!!functions[token]) {
+                return functions[token](func_inner);
+            }
         }
         var number = parseFloat(token) * negate;
         if(number != number) {
-            throw "Expected an integer";
+            throw "Unknown function or variable name '" + token + "'";
         }
         return number;
     }
     
-    var read_term = function(tokens) {
-        var value = read_operand(tokens);
+    var read_term = function(tokens, variables) {
+        var value = read_operand(tokens, variables);
         while(tokens.length) {
             var operator = tokens[0];
             if(operator == ')') {
@@ -49,34 +54,40 @@
                 return value;
             }
             tokens.shift(1);
-            var operand = read_operand(tokens);
+            var operand = read_operand(tokens, variables);
+            if(!operations[operator]) {
+                throw "Unknown operator " + operator;
+            }
             value = operations[operator](value, operand);
         }
         return value;
     }
     
-    var evaluate = function(tokens) {
+    var evaluate = function(tokens, variables) {
         if(tokens.length === 0) {
             throw "Missing an operand";
         }
-        var value = read_term(tokens);
+        var value = read_term(tokens, variables);
         while(tokens.length) {
             var operator = tokens[0];
             if(operator == ')') {
                 return value;
             }
             tokens.shift(1);
-            var operand = read_term(tokens);
+            var operand = read_term(tokens, variables);
+            if(!operations[operator]) {
+                throw "Unknown operator " + operator;
+            }
             value = operations[operator](value, operand);
         }
         return value;
     }
     
-    var calculate = function(text) {
-        var pattern = /(?:[+*\/()\-]|\.\d+|\d+\.\d*|\d+|sin|cos|tan|sqrt)/g;
+    var calculate = function(text, variables) {
+        var pattern = /(?:[+*\/()\-]|\.\d+|\d+\.\d*|\d+|\w+)/g;
         var tokens = text.match(pattern);
         try {
-            var result = evaluate(tokens);
+            var result = evaluate(tokens, variables);
             if(tokens.length) {
                 throw "ill-formed expression";
             }
@@ -92,16 +103,32 @@
         var button = $("<input type='submit' value='Calculate'>");
         var output = $('<div>');
         var p = $('<p>');
+        var variable_holder = $('<div>');
+        var variable_template = $('<div><input class="calculator-varname"> = <input class="calculator-varval">');
+        var add_button = $('<button>Add variable</button>');
         p.append(field, button);
-        form.append(p, output);
+        form.append(p, output, variable_holder, add_button);
         $(container).append(form);
+        
+        add_button.click(function(e) {
+            e.preventDefault();
+            variable_holder.append(variable_template.clone());
+        });
         
         form.submit(function(e) {
             e.preventDefault();
-            output.text(String(calculate(field.val())));
+            var variables = {};
+            variable_holder.find('div').each(function() {
+                var name = $(this).find('.calculator-varname').val();
+                var value = $(this).find('.calculator-varval').val();
+                if(name !== '') {
+                    variables[name] = parseFloat(value);
+                }
+            });
+            output.text(String(calculate(field.val(), variables)));
             return false;
         });
-    }
+    };
     
     $(window).ready(function() {
         $('.calculator').each(function() {
