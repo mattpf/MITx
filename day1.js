@@ -37,9 +37,6 @@
             if(operator == '-' || operator == '+') {
                 return value;
             }
-            if(!operations[operator]) {
-                return read_operand(tokens);
-            }
             tokens.shift(1);
             var operand = read_operand(tokens);
             value = operations[operator](value, operand);
