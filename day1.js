@@ -6,10 +6,31 @@
         '/': function(a, b) { return a / b; }
     };
     var functions = {
-        'sin': Math.sin,
+        'abs': Math.abs,
+        'acos': Math.acos,
+        'asin': Math.asin,
+        'atan': Math.atan,
+        'atan2': Math.atan2,
+        'ceil': Math.ceil,
         'cos': Math.cos,
-        'tan': Math.tan,
+        'floor': Math.floor,
+        'ln': Math.log,
+        'log': function(a, b) {
+            if(b === undefined) return Math.log(a);
+            else return Math.log(b) / Math.log(a);
+        },
+        'max': Math.max,
+        'min': Math.min,
+        'pow': Math.pow,
+        'random': Math.random,
+        'round': Math.round,
+        'sin': Math.sin,
         'sqrt': Math.sqrt
+    }
+    
+    var standard_variables = {
+        'pi': Math.PI,
+        'e': Math.E
     }
     
     var read_operand = function(tokens, variables) {
@@ -31,9 +52,22 @@
         }
         // This should probably be somewhere else...
         if(functions[token]) {
-            var func_inner = read_operand(tokens, variables);
+            if(tokens[0] != '(') {
+                throw "Expected (";
+            }
+            tokens.shift(1);
+            var args = [evaluate(tokens, variables)];
+            while(tokens) {
+                if(tokens[0] != ',') break;
+                tokens.shift(1);
+                args.push(evaluate(tokens, variables));
+            }
+            if(tokens[0] != ')') {
+                throw "Expected )";
+            }
+            tokens.shift(1);
             if(!!functions[token]) {
-                return functions[token](func_inner);
+                return functions[token].apply(this, args);
             }
         }
         var number = parseFloat(token) * negate;
@@ -47,7 +81,7 @@
         var value = read_operand(tokens, variables);
         while(tokens.length) {
             var operator = tokens[0];
-            if(operator == ')') {
+            if(operator == ')' || operator == ',') {
                 return value;
             }
             if(operator == '-' || operator == '+') {
@@ -70,7 +104,7 @@
         var value = read_term(tokens, variables);
         while(tokens.length) {
             var operator = tokens[0];
-            if(operator == ')') {
+            if(operator == ')' || operator == ',') {
                 return value;
             }
             tokens.shift(1);
@@ -84,7 +118,7 @@
     }
     
     var calculate = function(text, variables) {
-        var pattern = /(?:[+*\/()\-]|\.\d+|\d+\.\d*|\d+|\w+)/g;
+        var pattern = /(?:[+*\/()\-,]|\.\d+|\d+\.\d*|\d+|\w+)/g;
         var tokens = text.match(pattern);
         try {
             var result = evaluate(tokens, variables);
@@ -117,7 +151,7 @@
         
         form.submit(function(e) {
             e.preventDefault();
-            var variables = {};
+            var variables = $.extend({}, standard_variables);
             variable_holder.find('div').each(function() {
                 var name = $(this).find('.calculator-varname').val();
                 var value = $(this).find('.calculator-varval').val();
