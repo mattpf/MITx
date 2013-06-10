@@ -5,6 +5,12 @@
         '-': function(a, b) { return a - b; },
         '/': function(a, b) { return a / b; }
     };
+    var functions = {
+        'sin': Math.sin,
+        'cos': Math.cos,
+        'tan': Math.tan,
+        'sqrt': Math.sqrt
+    }
     
     var read_operand = function(tokens) {
         var token = tokens.shift(1);
@@ -19,6 +25,11 @@
         if(token == '-') {
             negate = -1;
             token = tokens.shift(1);
+        }
+        // This should probably be somewhere else...
+        if(functions[token]) {
+            var func_inner = read_operand(tokens);
+            return functions[token](func_inner);
         }
         var number = parseFloat(token) * negate;
         if(number != number) {
@@ -62,7 +73,7 @@
     }
     
     var calculate = function(text) {
-        var pattern = /(?:[+*\/()\-]|\.\d+|\d+\.\d*|\d+)/g;
+        var pattern = /(?:[+*\/()\-]|\.\d+|\d+\.\d*|\d+|sin|cos|tan|sqrt)/g;
         var tokens = text.match(pattern);
         try {
             var result = evaluate(tokens);
