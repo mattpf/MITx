@@ -48,7 +48,7 @@
             token = tokens.shift(1);
         }
         if(variables[token] !== undefined) {
-            return variables[token];
+            return variables[token] * negate;
         }
         // This should probably be somewhere else...
         if(functions[token]) {
@@ -67,7 +67,7 @@
             }
             tokens.shift(1);
             if(!!functions[token]) {
-                return functions[token].apply(this, args);
+                return functions[token].apply(this, args) * negate;
             }
         }
         var number = parseFloat(token) * negate;
@@ -101,6 +101,7 @@
         if(tokens.length === 0) {
             throw "Missing an operand";
         }
+        tokens = tokens.slice(0);
         var value = read_term(tokens, variables);
         while(tokens.length) {
             var operator = tokens[0];
@@ -117,9 +118,14 @@
         return value;
     }
     
-    var calculate = function(text, variables) {
+    var tokenise = function(text) {
         var pattern = /(?:[+*\/()\-,]|\.\d+|\d+\.\d*|\d+|\w+)/g;
         var tokens = text.match(pattern);
+        return tokens;
+    }
+    
+    var calculate = function(text, variables) {
+        var tokens = tokenise(text);
         try {
             var result = evaluate(tokens, variables);
             if(tokens.length) {
@@ -130,6 +136,27 @@
             return e;
         }
     };
+    
+    var num_range = function(start, stop, step) {
+        var out = [];
+        for(var value = start; value <= stop; value += step) {
+            out.push(value);
+        }
+        return out;
+    };
+    
+    var range_variable = function(expression, variable, start, stop, step, env) {
+        var tokens = tokenise(expression);
+        var values = num_range(start, stop, step);
+        var results = [];
+        var our_env = $.extend({}, env);
+        for(var i = 0; i < values.length; ++i) {
+            our_env[variable] = values[i];
+            results.push(evaluate(tokens, our_env));
+        }
+        return results;
+    }
+    window.range_variable = range_variable;
     
     var create_calculator = function(container) {
         var form = $('<form>');
