@@ -27,18 +27,38 @@
         return number;
     }
     
-    var evaluate = function(tokens) {
-        if(tokens.length === 0) {
-            throw "Missing an operand";
-        }
+    var read_term = function(tokens) {
         var value = read_operand(tokens);
         while(tokens.length) {
             var operator = tokens[0];
             if(operator == ')') {
                 return value;
             }
+            if(operator == '-' || operator == '+') {
+                return value;
+            }
+            if(!operations[operator]) {
+                return read_operand(tokens);
+            }
             tokens.shift(1);
             var operand = read_operand(tokens);
+            value = operations[operator](value, operand);
+        }
+        return value;
+    }
+    
+    var evaluate = function(tokens) {
+        if(tokens.length === 0) {
+            throw "Missing an operand";
+        }
+        var value = read_term(tokens);
+        while(tokens.length) {
+            var operator = tokens[0];
+            if(operator == ')') {
+                return value;
+            }
+            tokens.shift(1);
+            var operand = read_term(tokens);
             value = operations[operator](value, operand);
         }
         return value;
