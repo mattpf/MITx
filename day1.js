@@ -127,15 +127,11 @@
     var calculate = function(text, variables) {
         var tokens = tokenise(text);
         tokens = tokens.slice(0);
-        try {
-            var result = evaluate(tokens, variables);
-            if(tokens.length) {
-                throw "ill-formed expression";
-            }
-            return String(result);
-        } catch(e) {
-            return e;
+        var result = evaluate(tokens, variables);
+        if(tokens.length) {
+            throw "ill-formed expression";
         }
+        return String(result);
     };
     
     var num_range = function(start, stop, step) {
@@ -162,15 +158,15 @@
     
     var create_calculator = function(container) {
         var form = $('<form>');
-        var field = $("<input type='text' size='50'>");
+        var field = $("<input type='text' size='50' class='calculator-expression'>");
         var button = $("<input type='submit' value='Calculate'>");
-        var output = $('<div>');
+        var output = $('<div class="calculator-result">');
         var p = $('<p>');
         var variable_holder = $('<div>');
-        var variable_template = $('<div><input class="calculator-varname"> = <input class="calculator-varval">');
+        var variable_template = $('<div class="calculator-varholder"><input class="calculator-varname"> = <input class="calculator-varval" type="number">');
         var add_button = $('<button>Add variable</button>');
         p.append(field, button);
-        form.append(p, output, variable_holder, add_button);
+        form.append(p, variable_holder, add_button, output);
         $(container).append(form);
         
         add_button.click(function(e) {
@@ -188,7 +184,11 @@
                     variables[name] = parseFloat(value);
                 }
             });
-            output.text(String(calculate(field.val(), variables)));
+            try {
+                output.text(String(calculate(field.val(), variables))).removeClass('error');
+            } catch(e) {
+                output.text(String(e)).addClass('error');
+            }
             return false;
         });
     };

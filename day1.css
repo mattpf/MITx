@@ -1,6 +1,51 @@
-.hello {
-    font-weight: bold;
+.calculator {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    width: 400px;
 }
-.intro {
-    font-size: 30px;
+
+.calculator-varname {
+    width: 70px;
+}
+
+.calculator-expression {
+    font-size: 1.1em;
+    width: 300px;
+    font-family: Menlo, Consolas, 'Courier New';
+    border-radius: 2px;
+    border: 1px solid #ddd;
+}
+
+.calculator input[type=submit] {
+    font-size: 20px;
+}
+
+.calculator-varval {
+    width: 70px;
+}
+
+.calculator-varholder {
+    padding-left: 10px;
+}
+
+.calculator-varholder:nth-child(odd) {
+    background-color: #eee;
+}
+
+.calculator-result {
+    background-color: rgb(100, 200, 100);
+    font-family: Helvetica;
+    font-size: 1.2em;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+.calculator-result.error {
+    background-color: rgb(200, 100, 100);
+}
+
+.calculator p {
+    padding: 0px;
+    margin: 0px;
 }
