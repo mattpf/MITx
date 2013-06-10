@@ -20,7 +20,7 @@
             negate = -1;
             token = tokens.shift(1);
         }
-        var number = parseInt(token) * negate;
+        var number = parseFloat(token) * negate;
         if(number != number) {
             throw "Expected an integer";
         }
@@ -45,7 +45,7 @@
     }
     
     var calculate = function(text) {
-        var pattern = /(?:[+*\/()\-]|\d+)/g;
+        var pattern = /(?:[+*\/()\-]|\.\d+|\d+\.\d*|\d+)/g;
         var tokens = text.match(pattern);
         try {
             var result = evaluate(tokens);
