@@ -159,15 +159,15 @@
     var create_calculator = function(container) {
         var form = $('<form>');
         var field = $("<input type='text' size='50' class='calculator-expression'>");
-        var button = $("<input type='submit' value='Calculate'>");
+        var button = $("<input type='submit' value='Calculate' class='btn'>");
         var output = $('<div class="calculator-result">');
         var p = $('<p>');
-        var variable_holder = $('<div>');
-        var variable_template = $('<div class="calculator-varholder"><input class="calculator-varname"> = <input class="calculator-varval" type="number">');
-        var add_button = $('<button>Add variable</button>');
+        var variable_holder = $('<div class="calculator-parent">');
+        var variable_template = $('<div class="calculator-varholder"><input class="calculator-varname" type="text" placeholder="x"> = <input class="calculator-varval" type="number" placeholder="42">');
+        var add_button = $('<button class="btn btn-small">Add variable</button>');
         p.append(field, button);
-        form.append(p, variable_holder, add_button, output);
-        $(container).append(form);
+        form.append(p, output);
+        $(container).append(form, variable_holder, add_button);
         
         add_button.click(function(e) {
             e.preventDefault();
