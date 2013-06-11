@@ -2,7 +2,7 @@
 
 .apple-calculator {
     position: relative;
-    background-image: linear-gradient(to bottom, rgb(223, 223, 223), rgb(178, 178, 178));
+    background-image: linear-gradient(to bottom, rgb(223, 223, 223) 0%, rgb(178, 178, 178) 40%);
     width: 380px;
     height: 520px;
     padding-left: 18px;
@@ -10,10 +10,10 @@
     padding-top: 30px;
     font-family: "Lucida Grande", Helvetica, sans-serif;
     border-radius: 10px;
-    box-shadow: 0 0 20px 20px #888;
+    box-shadow: 0 15px 20px 10px #888;
     margin-top: 50px;
     margin-left: 100px;
-    border: 2px solid #7B7B7B;
+    border: 1px solid #7B7B7B;
 }
 
 /* "Window controls" */
