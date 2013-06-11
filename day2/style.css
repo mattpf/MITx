@@ -41,7 +41,7 @@
     height: 8px;
     margin-left: 5px;
     margin-top: 12px;
-    background: radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%,rgba(255,255,255,0) 80%); /* W3C */
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%,rgba(255,255,255,0) 80%);
 }
 .apple-calculator .buttons span:after {
     content: "";
@@ -50,7 +50,7 @@
     height: 5px;
     margin-left: 5px;
     margin-top: -20px;
-    background: radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%,rgba(255,255,255,0) 80%); /* W3C */
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%,rgba(255,255,255,0) 80%);
 }
 
 .apple-calculator .buttons .close {
@@ -106,6 +106,23 @@
     font-size: 1.5em;
     cursor: pointer;
     position: relative;
+    box-shadow: inset 0 -2px 3px 1px #888;
+}
+
+.apple-calculator button:before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 80px;
+    height: 8px;
+    top: 0px;
+    left: 4px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+    border-radius: 13px;
+}
+
+.apple-calculator button:active:before {
+    display: none;
 }
 
 .apple-calculator button:active {
@@ -115,6 +132,10 @@
 
 .apple-calculator button.zero {
     width: 185px;
+}
+
+.apple-calculator button.zero:before {
+    width: 175px;
 }
 
 .apple-calculator .keypad {
