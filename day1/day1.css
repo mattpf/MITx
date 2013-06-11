@@ -81,7 +81,8 @@
 }
 
 .calculator-result:empty {
-    background-color: transparent;
+    background-color: #eee;
+    height: 22px;
 }
 
 .calculator-result.error {
