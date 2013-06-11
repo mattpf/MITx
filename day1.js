@@ -121,6 +121,7 @@
     var tokenise = function(text) {
         var pattern = /(?:[+*\/()\-,\^]|\.\d+|\d+\.\d*|\d+|\w+)/g;
         var tokens = text.match(pattern);
+        if(!tokens) tokens = [];
         return tokens;
     }
     
