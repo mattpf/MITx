@@ -4,7 +4,12 @@
         '+': function(a, b) { return a + b; },
         '-': function(a, b) { return a - b; },
         '/': function(a, b) { return a / b; },
-        '^': function(a, b) { return Math.pow(a, b); }
+        '**': function(a, b) { return Math.pow(a, b); },
+        '>>': function(a, b) { return a >> b; },
+        '<<': function(a, b) { return a << b; },
+        '&': function(a, b) { return a & b; },
+        '|': function(a, b) { return a | b; },
+        '^': function(a, b) { return a ^ b; }
     };
     var functions = {
         'abs': Math.abs,
@@ -119,7 +124,7 @@
     }
     
     var tokenise = function(text) {
-        var pattern = /(?:[+*\/()\-,\^]|\.\d+|\d+\.\d*|\d+|\w+)/g;
+        var pattern = /(?:\*\*|<<|>>|[&|+*\/()\-,\^]|\.\d+|\d+\.\d*|\d+|\w+)/g;
         var tokens = text.match(pattern);
         if(!tokens) tokens = [];
         return tokens;
