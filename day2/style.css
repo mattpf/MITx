@@ -84,14 +84,27 @@
     box-shadow: inset 0 0 3px 3px #888;
     margin-right: 10px;
     margin-left: 10px;
+    position: relative;
 }
 
-.apple-calculator .display > div {
+.apple-calculator .display > .value {
     position: relative;
     top: 10px;
     right: 50px;
     text-align: right;
     font-size: 1.8em;
+}
+
+.apple-calculator .display > .mem {
+    position: absolute;
+    bottom: 5px;
+    left: 50px;
+}
+
+.apple-calculator .display > .operation {
+    position: absolute;
+    bottom: 5px;
+    left: 250px;
 }
 
 /* Keypad */
