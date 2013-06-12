@@ -224,6 +224,15 @@
             e.preventDefault();
             variable_holder.append(variable_template.clone());
         });
+
+        var x_values, y_values, max, min, range, real_zero_y, real_zero_x, end, start;
+        var has_graph = false;
+
+        var graph_to_screen = function(x_graph, y_graph) {
+            var y_screen = Math.floor(display_height - (((y_graph) - min) / range) * display_height) + offset;
+            var x_screen = real_zero_y + x_graph * (width / (end-start));
+            return [x_screen, y_screen];
+        }
         
         form.submit(function(e) {
             e.preventDefault();
@@ -236,19 +245,20 @@
                 }
             });
             try {
-                var start = evaluate(tokenise(xmin.val()), variables);
-                var end = evaluate(tokenise(xmax.val()), variables);
+                start = evaluate(tokenise(xmin.val()), variables);
+                end = evaluate(tokenise(xmax.val()), variables);
                 var step = (end - start) / width;
                 var values = range_variable(field.val(), 'x', start, end, step, variables);
             } catch(e) {
                 alert(e);
                 return false;
             }
-            var x_values = values[0];
-            values = values[1];
-            var max = Math.max.apply(this, values);
-            var min = Math.min.apply(this, values);
-            var range = max - min;
+            has_graph = true;
+            x_values = values[0];
+            y_values = values[1];
+            max = Math.max.apply(this, y_values);
+            min = Math.min.apply(this, y_values);
+            range = max - min;
             if(range < 1) {
                 min -= 0.5;
                 max += 0.5;
@@ -262,7 +272,7 @@
             ctx.strokeStyle = '#222';
             // y axis
             var zero_y = -start / step;
-            var real_zero_y = zero_y;
+            real_zero_y = zero_y;
             if(zero_y < 0) zero_y = 0;
             else if(zero_y > width) zero_y = width; 
             ctx.beginPath();
@@ -271,7 +281,7 @@
             ctx.stroke();
             // x axis
             var zero_x = Math.floor(display_height - ((0 - min) / range) * display_height) + offset;
-            var real_zero_x = zero_x;
+            real_zero_x = zero_x;
             if(zero_x > height) zero_x = height;
             else if(zero_x < 0) zero_x = 0;
             ctx.beginPath();
@@ -320,15 +330,39 @@
             ctx.lineWidth = 3;
             ctx.strokeStyle = '#FA5A55';
             ctx.beginPath();
-            for(var i = 0; i < values.length; ++i) {
+            for(var i = 0; i < y_values.length; ++i) {
                 var x = i;
-                var y = Math.floor(display_height - (((values[i]) - min) / range) * display_height) + offset;
+                var y = Math.floor(display_height - (((y_values[i]) - min) / range) * display_height) + offset;
                 ctx.lineTo(x, y);
             }
             ctx.stroke();
 
             blit();
             return false;
+        });
+
+        canvas.on('mousemove', function(e) {
+            if(!has_graph) return;
+            blit();
+            var offset = canvas.offset();
+            var mx = Math.round(event.pageX - offset.left);
+            var my = Math.round(event.pageY - offset.top);
+
+            var value_index = Math.round(mx);
+            var gx = x_values[value_index];
+            var gy = y_values[value_index];
+            var screen_coords = graph_to_screen(gx, gy);
+            var sx = screen_coords[0];
+            var sy = screen_coords[1];
+
+            vctx.lineWidth = 1;
+            vctx.strokeStyle = '#aaa';
+            vctx.beginPath();
+            vctx.moveTo(0,sy); vctx.lineTo(width,sy);
+            vctx.moveTo(sx,0); vctx.lineTo(sx,height);
+            vctx.stroke();
+
+            vctx.fillText(gx.toPrecision(3)+", "+gy.toPrecision(3),sx+4,sy-4);
         });
     };
     
