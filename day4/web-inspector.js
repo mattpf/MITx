@@ -192,7 +192,7 @@ var Inspector = function($) {
     var css = document.createElement('link');
     css.setAttribute('rel', 'stylesheet');
     css.setAttribute('type', 'text/css');
-    css.setAttribute('href', 'http://localhost:8000/web-inspector.css'); // XXX TODO CHANGEME!!
+    css.setAttribute('href', 'web-inspector.css'); // XXX TODO CHANGEME!!
     document.head.appendChild(css);
 
     if ('jQuery' in window) {
