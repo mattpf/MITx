@@ -180,7 +180,7 @@
     }
     
     var create_calculator = function(container) {
-        var width = 438; var height = 200;
+        var width = 438; var height = 300;
         var display_height = height - 20; var offset = 10;
         var canvas = $('<canvas width="' + width + '" height="' + height + '">');
         var backing_store = $('<canvas width="' + width + '" height="' + height + '">');
@@ -211,13 +211,15 @@
 
         // Retina support
         /*if(window.devicePixelRatio) {
-            canvas.attr('width', width * window.devicePixelRatio);
-            canvas.attr('height', height * window.devicePixelRatio);
-            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            width *= window.devicePixelRatio;
+            height *= window.devicePixelRatio;
+            canvas.attr('width', width);
+            canvas.attr('height', height);
+            //ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-            backing_store.attr('width', width * window.devicePixelRatio);
-            backing_store.attr('height', height * window.devicePixelRatio);
-            vctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            backing_store.attr('width', width);
+            backing_store.attr('height', height);
+            //vctx.scale(window.devicePixelRatio, window.devicePixelRatio);
         }*/
 
         add_button.click(function(e) {
@@ -341,6 +343,10 @@
             return false;
         });
 
+        var dragging = false;
+        var drag_start = null;
+        var drag_end = null;
+
         canvas.on('mousemove', function(e) {
             if(!has_graph) return;
             blit();
@@ -355,14 +361,72 @@
             var sx = screen_coords[0];
             var sy = screen_coords[1];
 
-            vctx.lineWidth = 1;
-            vctx.strokeStyle = '#aaa';
-            vctx.beginPath();
-            vctx.moveTo(0,sy); vctx.lineTo(width,sy);
-            vctx.moveTo(sx,0); vctx.lineTo(sx,height);
-            vctx.stroke();
 
-            vctx.fillText(gx.toPrecision(3)+", "+gy.toPrecision(3),sx+4,sy-4);
+            if(dragging) {
+                vctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                vctx.fillRect(drag_start[0], 0, mx - drag_start[0], height);
+                var start_y = y_values[Math.round(drag_start[0])];
+                var start_x = x_values[Math.round(drag_start[0])];
+                var screen = graph_to_screen(start_x, start_y);
+                console.log(screen);
+
+                vctx.fillStyle = 'black';
+
+                vctx.beginPath();
+                vctx.arc(screen[0], screen[1],5,0,2*Math.PI);
+                vctx.fill();
+                vctx.fillStyle = 'black';
+                vctx.textAlign = 'right';
+                vctx.fillText(start_x.toPrecision(3)+", "+start_y.toPrecision(3),screen[0]-4,screen[1]-4);
+
+                vctx.beginPath();
+                vctx.arc(sx, sy,5,0,2*Math.PI);
+                vctx.fill();
+
+                vctx.fillStyle = 'black';
+                vctx.textAlign = 'left';
+                vctx.fillText(gx.toPrecision(3)+", "+gy.toPrecision(3),sx+4,sy-4);
+
+
+                vctx.fillStyle = 'black';
+                vctx.textAlign = 'center';
+                vctx.font = "20px Helvetica";
+                vctx.fillText((gy - start_y).toPrecision(3),(sx + screen[0])/2,20);
+                vctx.font = "12px Helvetica";
+
+            } else {
+                vctx.lineWidth = 1;
+                vctx.strokeStyle = '#aaa';
+                vctx.beginPath();
+                vctx.moveTo(0,sy); vctx.lineTo(width,sy);
+                vctx.moveTo(sx,0); vctx.lineTo(sx,height);
+                vctx.stroke();
+
+                var next_gy = y_values[value_index+1] || 0;
+                var x_label_pos = sx + 4;
+                if(next_gy > gy) {
+                    x_label_pos = sx - 4;
+                    vctx.textAlign = 'right';
+                } else {
+                    vctx.textAlign = 'left';
+                }
+                vctx.fillStyle = 'black';
+                vctx.fillText(gx.toPrecision(3)+", "+gy.toPrecision(3),x_label_pos,sy-4);
+            }
+        });
+
+        canvas.on('mousedown', function(e) {
+            e.preventDefault();
+            dragging = true;
+            var offset = canvas.offset();
+            var mx = Math.round(event.pageX - offset.left);
+            var my = Math.round(event.pageY - offset.top);
+
+            drag_start = [mx, my];
+        });
+
+        canvas.on('mouseup', function(e) {
+            dragging = false;
         });
     };
     
