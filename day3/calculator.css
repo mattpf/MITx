@@ -183,3 +183,18 @@
     white-space: nowrap;
     pointer-events: none;
 }
+
+.calculator .range {
+    margin-left: 5px;
+    margin-top: 2px;
+    position: relative;
+    height: 18px;
+}
+
+.calculator .range .control:first-child {
+    float: left;
+}
+
+.calculator .range .control:last-child {
+    float: right;
+}
