@@ -178,10 +178,23 @@
         }
         return ticks;
     }
+
+    var label_div = $('<div class="crosshair-label">').hide();
+    var show_label = function(sx, sy, gx, gy) {
+        label_div.show();
+        if(Math.abs(gx) < 1e-10) gx = 0;
+        if(Math.abs(gy) < 1e-10) gy = 0;
+        label_div.css({top: sy - 30, left: sx + 10}).text(gx.toPrecision(3) + ", " + gy.toPrecision(3));
+    }
+
+    var hide_label = function() {
+        label_div.hide();
+    }
     
     var create_calculator = function(container) {
         var width = 438; var height = 300;
         var display_height = height - 20; var offset = 10;
+        var canvas_holder = $('<div style="position: relative;">');
         var canvas = $('<canvas width="' + width + '" height="' + height + '">');
         var backing_store = $('<canvas width="' + width + '" height="' + height + '">');
         var range_holder = $('<div>');
@@ -196,9 +209,10 @@
         var p = $('<p>');
         var variable_holder = $('<div class="calculator-parent">');
         var variable_template = $('<div class="calculator-varholder"><input class="calculator-varname" type="text" placeholder="y"> = <input class="calculator-varval" type="number" placeholder="42">');
-        var add_button = $('<button class="btn btn-small">Add variable</button>');
+        var add_button = $('<button class="btn btn-small">Add static variable</button>');
         p.append(field, button);
-        form.append(p, range_holder, canvas);
+        canvas_holder.append(canvas, label_div);
+        form.append(p, range_holder, canvas_holder);
         $(container).append(form, variable_holder, add_button);
         
         var ctx = backing_store[0].getContext('2d');
@@ -402,7 +416,7 @@
                 vctx.moveTo(sx,0); vctx.lineTo(sx,height);
                 vctx.stroke();
 
-                var next_gy = y_values[value_index+1] || 0;
+                /*var next_gy = y_values[value_index+1] || 0;
                 var x_label_pos = sx + 4;
                 if(next_gy > gy) {
                     x_label_pos = sx - 4;
@@ -412,12 +426,15 @@
                 }
                 vctx.fillStyle = 'black';
                 vctx.fillText(gx.toPrecision(3)+", "+gy.toPrecision(3),x_label_pos,sy-4);
+                */
+                show_label(sx, sy, gx, gy);
             }
         });
 
         canvas.on('mousedown', function(e) {
             e.preventDefault();
             dragging = true;
+            hide_label();
             var offset = canvas.offset();
             var mx = Math.round(event.pageX - offset.left);
             var my = Math.round(event.pageY - offset.top);
@@ -428,6 +445,11 @@
         canvas.on('mouseup', function(e) {
             dragging = false;
         });
+
+        canvas.on('mouseout', function(e) {
+            hide_label();
+            blit();
+        })
     };
     
     $(window).ready(function() {
