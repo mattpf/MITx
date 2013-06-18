@@ -1,0 +1,51 @@
+.quiz {
+    font-family: 'Helvetica Neue', Helvetica, sans-serif;
+    width: 500px;
+}
+
+.options {
+    list-style: none;
+    padding-left: 0px;
+    border: 1px solid gray;
+    border-radius: 2px;
+}
+
+.options li {
+    height: 20px;
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.options input[type=radio] {
+    margin-left: 5px;
+}
+
+.options label {
+    margin-left: 5px;
+}
+
+.options li:nth-child(2n) {
+    background-color: #dff6fe;
+}
+
+.prompt {
+    font-weight: bold;
+}
+
+.result {
+    float: right;
+    padding-right: 10px;
+    font-weight: bold;
+}
+
+.result.wrong {
+    color: #d92214;
+}
+
+.result.correct {
+    color: green;
+}
+
+.quiz.loading {
+}
